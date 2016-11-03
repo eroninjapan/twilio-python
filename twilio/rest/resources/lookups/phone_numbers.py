@@ -44,9 +44,8 @@ class PhoneNumbers(NextGenListResource):
     name = "PhoneNumbers"
     instance = PhoneNumber
 
-    def get(self, number, include_carrier_info=False, country_code=None):
+    def get(self, number, include_caller_name=False, include_carrier_info=False, country_code=None):
         """Look up a phone number.
-
         :param str number: The phone number to query.
         :param bool include_carrier_info: Whether to do a carrier lookup on
             the phone number. See twilio.com for the latest pricing.
@@ -56,11 +55,17 @@ class PhoneNumbers(NextGenListResource):
         """
 
         params = {}
+        
         if country_code is not None:
             params['country_code'] = country_code
 
+        if include_caller_name:
+            params['type'] = list()
+            params['type'].append('caller-name')
+
         if include_carrier_info:
-            params['type'] = 'carrier'
+            params['type'] = params.get('type') or list()
+            params['type'].append('carrier')
 
         params = transform_params(params)
         uri = "%s/%s" % (self.uri, number)
